@@ -1,0 +1,5 @@
+asdasd	123123	0	0
+qweasd	123123	1	A
+asdzxc	123123	1	B1
+qweqwe	123123	2	0
+zxczxc	123123	3	0
