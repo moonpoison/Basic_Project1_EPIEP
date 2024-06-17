@@ -137,6 +137,7 @@ int main()
 			while (len == -1)
 				len = recv(sock, tmp, BUF_SIZE - 1, 0);
 			if (len >= 0) tmp[len] = '\0';
+			printf("%s", tmp);
 			char* ptr = strtok(tmp, " ");
 			int cnt = 0;
 			while (ptr != NULL)

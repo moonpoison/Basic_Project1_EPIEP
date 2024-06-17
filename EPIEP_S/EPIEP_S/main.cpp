@@ -433,6 +433,7 @@ unsigned WINAPI HandleClient(void* arg) {
 							printf("Send Result...can't search that hospital\n");
 						}
 					}
+					break;
 				}
 			}
 			else if (!strcmp(msg, "func3"))//병원특이사항 전달
@@ -564,6 +565,7 @@ unsigned WINAPI HandleClient(void* arg) {
 							strcat(result, tmp);
 						}
 						printf("Send Result\n", result);
+						printf("%s", result);
 						send(clientSock, result, strlen(result), 0);
 						break;
 					}
