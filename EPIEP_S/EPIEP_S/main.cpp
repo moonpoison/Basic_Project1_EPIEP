@@ -20,7 +20,7 @@
 #define BLUE 9
 #define GREEN 2
 
-typedef struct
+typedef struct //사용자 ID/PW를 저장하는 구조체
 {
 	char ID[20];
 	char PW[20];
@@ -28,7 +28,7 @@ typedef struct
 	char hos[10];
 }User;
 
-typedef struct 
+typedef struct //환자의 정보를 저장하는 구조체
 {
 	char name[20];
 	char ident[20];
@@ -41,7 +41,7 @@ typedef struct
 	int triage;
 }Paitient;
 
-typedef struct
+typedef struct //원내 환자의 정보를 저장하는 구조체
 {
 	char name[20];
 	char ident[20];
@@ -51,7 +51,7 @@ typedef struct
 	int triage;
 }HPaitient;
 
-typedef struct
+typedef struct //병원의 정보를 저장하는 구조체
 {
 	char name[20];
 	int dep;
@@ -88,10 +88,10 @@ User user[STD_MAX_NUM];
 Paitient paitient[STD_MAX_NUM];
 HPaitient hp[STD_MAX_NUM];
 Hospital hospital[STD_MAX_NUM];
-int H_cnt = 0;
-int P_cnt = 0;
-int HP_cnt = 0;
-int U_cnt = 0;
+int H_cnt = 0; //병원의 수
+int P_cnt = 0; //환자의 수
+int HP_cnt = 0; //원별 환자의 수
+int U_cnt = 0; //사용자의 수
 FILE* FHos, * FPait, * FUser;//파일포인터변수의선언
 
 int main(int argc, char* argv[]) {
@@ -155,13 +155,13 @@ int main(int argc, char* argv[]) {
 	WSACleanup();//윈도우 소켓을 종료하겠다는 사실을 운영체제에 전달
 	return 0;
 }
-
+//파일로부터읽기
 void setUserData(FILE* fp)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
 	printf("Server : Initiation of USER Data Load \n");
 	while (!feof(fp)) {
-		fscanf(fp, "%s\t%s\t%d\t%[^\n]", &user[U_cnt].ID, &user[U_cnt].PW, &user[U_cnt].author, user[U_cnt].hos); //파일로부터읽기
+		fscanf(fp, "%s\t%s\t%d\t%[^\n]", &user[U_cnt].ID, &user[U_cnt].PW, &user[U_cnt].author, user[U_cnt].hos); 
 		++U_cnt;
 	}
 	printf("Server : End of Data Loading \n");
@@ -203,9 +203,8 @@ void setHpData(FILE* fp)
 	printf("Server : End of Data Loading \n");
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
 }
-/*주경수	123123-1234123	31	남	안와골절	3
-김지수	123323-1245152	23	여	비문증	5*/
-void reHPData(FILE* fp)
+
+void reHPData(FILE* fp) //원내 환자의 정보를 재잭성하는 함수(1~5줄 중 3줄의 정보만을 바꿀수 없어 전체를 재작성하는 방법
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
 	printf("Server : Rewrite Hos Paitient Data Load \n");
@@ -219,21 +218,20 @@ void reHPData(FILE* fp)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
 }
 
-int check_ID(char *id, char *pw)
+int check_ID(char *id, char *pw)  //ID, PW를 확인하는 함수
 {
 	for (int i = 0; i < U_cnt; ++i)
 	{
 		printf("%s %s\n", id, user[i].ID);
-		if (!strcmp(id, user[i].ID))
+		if (!strcmp(id, user[i].ID)) //ID가 일치하며...
 		{
-			printf("%s %s\n", pw, user[i].PW);
-			if (!strcmp(pw, user[i].PW))
+			if (!strcmp(pw, user[i].PW))//PW가 일치한다면...
 			{
 				return i;
 			}
 		}
 	}
-	return 999;
+	return 999; //UserID.txt내 일치하는 정보가 없을 경우 반환하는 값(로그인 오류 반환)
 }
 
 unsigned WINAPI HandleClient(void* arg) {
@@ -248,9 +246,9 @@ unsigned WINAPI HandleClient(void* arg) {
 	{
 		strcpy(msg, "");
 		strLen = 0;
-		strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
+		strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);//ID전달받음
 		msg[strLen] = '\0';
-		printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+		printf("Server : Resieved Message -> %s\n", msg);
 		if (strcmp(msg, ""))
 		{
 			strcpy(in_id, msg);
@@ -258,16 +256,16 @@ unsigned WINAPI HandleClient(void* arg) {
 			{
 				strcpy(msg, "");
 				strLen = 0;
-				strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
+				strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);//PW전달받음
 				msg[strLen] = '\0';
-				printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+				printf("Server : Resieved Message -> %s\n", msg);
 				if (strcmp(msg, ""))
 				{
 					strcpy(in_pw, msg);
-					int i = check_ID(in_id, in_pw);
+					int i = check_ID(in_id, in_pw); //ID, PW 검증
 					strcpy(result, "");
-					if (i == 999) _itoa(999, result, 10);
-					else _itoa(user[i].author, result, 10);
+					if (i == 999) _itoa(999, result, 10);//999를 반환
+					else _itoa(user[i].author, result, 10);//author을 반환
 					if (user[i].author == 1)
 					{
 						strcat(result, " ");
@@ -277,7 +275,7 @@ unsigned WINAPI HandleClient(void* arg) {
 					break;
 				}
 			}
-			if (author != 999) break;
+			if (author != 999) break; //로그인 오류가 아니라면 로그인파트 탈출
 		}
 	}
 	if (author != 999)
@@ -287,9 +285,9 @@ unsigned WINAPI HandleClient(void* arg) {
 			strcpy(msg, "");
 			char dis[100];
 			while(strLen==-1)
-				strLen=recv(clientSock, msg, BUF_SIZE - 1, 0);
+				strLen=recv(clientSock, msg, BUF_SIZE - 1, 0); //사용할 기능을 입력받음
 			msg[strLen] = '\0';
-			printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+			printf("Server : Resieved Message -> %s\n", msg);
 			if (!strcmp(msg, "func1"))//환자정보전달
 			{
 				Paitient p;
@@ -299,7 +297,7 @@ unsigned WINAPI HandleClient(void* arg) {
 					strLen = 0;
 					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
 					msg[strLen] = '\0';
-					printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+					printf("Server : Resieved Message -> %s\n", msg);
 					if (strcmp(msg, ""))
 					{
 						char* ptr = strtok(msg, " ");      // " " 공백 문자를 기준으로 문자열을 자름, 포인터 반환
@@ -332,7 +330,7 @@ unsigned WINAPI HandleClient(void* arg) {
 				int min_cost=999;//거리대비
 				char target[20]="asd";//병원이름
 				/*연산부*/
-				if (p.triage == 1 || p.triage == 2)
+				if (p.triage == 1 || p.triage == 2) //권역의료센터로 가야한다면
 				{
 					for (int i = 0; i < H_cnt; ++i)
 					{
@@ -351,7 +349,7 @@ unsigned WINAPI HandleClient(void* arg) {
 						}
 					}
 				}
-				else if (p.triage == 2 || p.triage == 3)
+				else if (p.triage == 2 || p.triage == 3) //지역의료센터로 가야한다면
 				{
 					for (int i = 0; i < H_cnt; ++i)
 					{
@@ -370,7 +368,7 @@ unsigned WINAPI HandleClient(void* arg) {
 						}
 					}
 				}
-				else
+				else  //지역의료기관으로 가야한다면
 				{
 					for (int i = 0; i < H_cnt; ++i)
 					{
@@ -406,15 +404,15 @@ unsigned WINAPI HandleClient(void* arg) {
 				{
 					strcpy(msg, "");
 					strLen = 0;
-					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
+					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0); //병원명을 입력받음
 					msg[strLen] = '\0';
-					printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+					printf("Server : Resieved Message -> %s\n", msg);
 					int flag = 0;
 					if (strcmp(msg, ""))
 					{
 						for (i = 0; i < H_cnt; ++i)
 						{
-							if (!strcmp(hospital[i].name, msg))
+							if (!strcmp(hospital[i].name, msg)) //병원의 내원현황을 전달함
 							{
 								if(hospital[i].is_noti) sprintf(result, "\"%s\"병원의 내원 현황은 %d/%d입니다.\n특이사항 : %s", hospital[i].name, hospital[i].bed_use, hospital[i].bed_all, hospital[i].noti);
 								else sprintf(result, "\"%s\"병원의 내원 현황은 %d/%d입니다.\n특이사항 : 없음", hospital[i].name, hospital[i].bed_use, hospital[i].bed_all);
@@ -427,7 +425,7 @@ unsigned WINAPI HandleClient(void* arg) {
 							send(clientSock, result, strlen(result), 0);
 							printf("Send Result\n");
 						}
-						else
+						else //병원명을 찾지 못하였을 경우(예외처리)
 						{
 							send(clientSock, "can't search that hospital", strlen(result), 0);
 							printf("Send Result...can't search that hospital\n");
@@ -442,15 +440,15 @@ unsigned WINAPI HandleClient(void* arg) {
 				{
 					strcpy(msg, "");
 					strLen = 0;
-					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
+					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0); //병원명을 전달받음
 					msg[strLen] = '\0';
-					printf("Server : Resieved Message -> %s\n", msg);  //확인용
+					printf("Server : Resieved Message -> %s\n", msg);
 					char in_hos[20], in_noti[30];
 					char* ptr = strtok(msg, " ");     
 					strcpy(in_hos, ptr);
 					ptr = strtok(NULL, "\n");
 					strcpy(in_noti, ptr);
-					printf("병원 : %s, 특이사항 : %s", in_hos, in_noti);
+					printf("병원 : %s, 특이사항 : %s", in_hos, in_noti); //특이사항을 해당 병원에 등록
 					for (i = 0; i < H_cnt; ++i)
 					{
 						if (!strcmp(hospital[i].name, in_hos))
@@ -468,9 +466,9 @@ unsigned WINAPI HandleClient(void* arg) {
 				{
 					strcpy(msg, "");
 					strLen = 0;
-					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
+					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0); //환자의 이름을 입력받음
 					msg[strLen] = '\0';
-					printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+					printf("Server : Resieved Message -> %s\n", msg);
 					int flag = 0;
 					if (strcmp(msg, ""))
 					{
@@ -488,7 +486,7 @@ unsigned WINAPI HandleClient(void* arg) {
 							send(clientSock, result, strlen(result), 0);
 							printf("Send Result\n");
 						}
-						else
+						else //환자의 이름을 찾을 수 없는 경우(예외처리)
 						{
 							send(clientSock, "can't search that paitient", strlen("can't search that paitient"), 0);
 							printf("Send Result...can't search that paitient\n");
@@ -511,14 +509,14 @@ unsigned WINAPI HandleClient(void* arg) {
 					if(i+1!=U_cnt) strcat(tmp, " ");
 					strcat(result, tmp);
 				}
-				send(clientSock, result, strlen(result), 0);
+				send(clientSock, result, strlen(result), 0); //UserID.txt에 존재하는 정보를 전달(클라이언트가 해당 정보를 보고 고르기 위함)
 				while (1)
 				{
 					strcpy(msg, "");
 					strLen = 0;
-					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
+					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0); //UserID.txt에 존재하는 ID를 전달받음
 					msg[strLen] = '\0';
-					printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+					printf("Server : Resieved Message -> %s\n", msg);
 					int flag = 0;
 					if (strcmp(msg, ""))
 					{
@@ -530,7 +528,7 @@ unsigned WINAPI HandleClient(void* arg) {
 						in_author = atoi(ptr);
 						for (i = 0; i < U_cnt; ++i)
 						{
-							if (!strcmp(user[i].ID, in_id))
+							if (!strcmp(user[i].ID, in_id)) //상응하는 ID를 찾아서 해당 ID의 권한을 변경
 							{
 								user[i].author = in_author;
 							}
@@ -545,14 +543,14 @@ unsigned WINAPI HandleClient(void* arg) {
 				{
 					strcpy(msg, "");
 					strLen = 0;
-					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
+					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0); //클라이언트가 어떤 병원인지 병원명을 전달받음(다른 병원의 환자 정보에 대해 접근을 막기 위함)
 					msg[strLen] = '\0';
-					printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+					printf("Server : Resieved Message -> %s\n", msg);
 					if (strcmp(msg, ""))
 					{
 						char hos[10];
 						strcpy(hos, msg);
-						strcat(hos, ".txt");
+						strcat(hos, ".txt"); //전달받은 병원명에 .txt를 붙여 해당하는 병원 파일을 엶
 						FILE* fp = fopen(hos, "r+");
 						HP_cnt = 0;
 						setHpData(fp);
@@ -566,12 +564,12 @@ unsigned WINAPI HandleClient(void* arg) {
 						}
 						printf("Send Result\n", result);
 						printf("%s", result);
-						send(clientSock, result, strlen(result), 0);
+						send(clientSock, result, strlen(result), 0); //병원 txt파일에 존재하는 데이터를 전달
 						break;
 					}
 				}
 			}
-			else if (!strcmp(msg, "func7")) //내원환자 현황조회
+			else if (!strcmp(msg, "func7")) //내원환자 진료완료 처리(func6에서 환자를 골라 해당 환자를 제거
 			{
 				char hos[10];
 				while (1)
@@ -607,12 +605,12 @@ unsigned WINAPI HandleClient(void* arg) {
 					strLen = 0;
 					strLen = recv(clientSock, msg, BUF_SIZE - 1, 0);
 					msg[strLen] = '\0';
-					printf("Server : Resieved Message -> %s\n", msg);  //확인용 
+					printf("Server : Resieved Message -> %s\n", msg); 
 					if (strcmp(msg, ""))
 					{
 						int a;
 						a = atoi(msg);
-						for (int i = a; i < HP_cnt-1; ++i)
+						for (int i = a; i < HP_cnt-1; ++i)//해당하는 환자 없애기
 						{
 							strcpy(hp[i].name, hp[i + 1].name);
 							strcpy(hp[i].ident, hp[i + 1].ident);
