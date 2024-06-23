@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
 	SOCKADDR_IN serverAddr, clientAddr;
 	int clientAddrSize;
 	HANDLE hThread;
-	int portNum=55555;
+	int portNum;
 
 	// Start of Students Information Loading form the file
 	if ((FHos = fopen("HospitalDB.txt", "r+")) == NULL) {
@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
 
 	// Start of Server Socket Preparation
 	printf("Server : Set Server Port number (Please use integer number between 49152 to 65535) : ");
-	//scanf("%d", &portNum);
+	scanf("%d", &portNum);
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	hMutex = CreateMutex(NULL, FALSE, NULL);//하나의 뮤텍스를 생성한다.
 	serverSock = socket(PF_INET, SOCK_STREAM, 0); //하나의 소켓을 생성한다.
@@ -173,7 +173,8 @@ void setPaitData(FILE* fp)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), GREEN);
 	printf("Server : Initiation of PAITIENT Data Load \n");
 	while (!feof(fp)) {
-		fscanf(fp, "%s\t%s\t%d\t%s\t%s\t%d\t%[^\n]", paitient[P_cnt].name, paitient[P_cnt].ident, &paitient[P_cnt].age, paitient[P_cnt].sexual, &paitient[P_cnt].disease, &paitient[P_cnt].is_noti, paitient[P_cnt].noti, paitient[H_cnt].noti); //파일로부터읽기
+		fscanf(fp, "%s\t%s\t%d\t%s\t%s\t%d", paitient[P_cnt].name, paitient[P_cnt].ident, &paitient[P_cnt].age, paitient[P_cnt].sexual, &paitient[P_cnt].disease, &paitient[P_cnt].is_noti, paitient[P_cnt].noti, paitient[H_cnt].noti); //파일로부터읽기
+		if (paitient[P_cnt].is_noti == 1) fscanf(fp, "\t%[^\n]", paitient[P_cnt].noti);
 		++P_cnt;
 	}
 	printf("Server : End of Data Loading \n");

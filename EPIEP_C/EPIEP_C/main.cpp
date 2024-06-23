@@ -23,14 +23,14 @@ int main()
 	SOCKADDR_IN serverAddr;
 	HANDLE sendThread, recvThread;
 
-	char serverIp[100]="127.0.0.1";
+	char serverIp[100]="";
 	int  portNum=55555;
 
 	printf("Input server IP : ");
-	//gets_s(serverIp);
+	gets_s(serverIp);
 
 	printf("Input server port : ");
-	//scanf("%d", &portNum);
+	scanf("%d", &portNum);
 
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	sock = socket(PF_INET, SOCK_STREAM, 0);//소켓을 하나 생성한다.

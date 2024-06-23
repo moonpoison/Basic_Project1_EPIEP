@@ -16,8 +16,7 @@ typedef struct
 	int triage;
 }HPaitient;
 
-void make_frame(int, int, int, int);	//x, y좌표, 생성값(최대 118, 28)		//메인 창 프레임 생성
-void make_cross(int, int);	//초록 십자가 생성(좌표값 필요)
+void make_frame(int, int, int, int);	//x, y좌표, 생성값(최대 118, 28)		
 int menu_select(int); //메뉴 선택 인터페이스
 char* interface_menu(int);	//메뉴 인터페이스 생성
 char* interface_enter(char* stat); //어떤 인터페이스로 진입할지 정하는 함수

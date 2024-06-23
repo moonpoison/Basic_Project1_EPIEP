@@ -29,9 +29,9 @@ void skip_utf8_bom(FILE* file) {
 void remove_blank(FILE* file) {
 	char tmp[1024];
 	fgets(tmp, 1024, file);
-	if (!strcmp(tmp, "")) 
+	if (!strcmp(tmp, ""))
 	{
-		
+
 		return;
 	}
 	else {
@@ -39,14 +39,14 @@ void remove_blank(FILE* file) {
 		fseek(file, 0, SEEK_SET);
 	}
 }
-void gotoxy(int x, int y) 
+void gotoxy(int x, int y)
 {
 	COORD Pos;
 	Pos.X = x;
 	Pos.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
 }
-void color(int color) 
+void color(int color)
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, color);
@@ -64,7 +64,7 @@ char func_KTAS1(char* root)
 	char asd;
 	char data[20][200];
 	char tmp[1024];
-	int cnt=0;
+	int cnt = 0;
 	while (!feof(fp)) {
 		fgets(tmp, 1023, fp);
 		printf("%s", tmp);
@@ -77,28 +77,41 @@ char func_KTAS1(char* root)
 	}
 	fclose(fp);
 	system("cls");
-	make_frame(0, 0, 118, 29);
-	gotoxy(2, 1);
-	printf("아래 중 해당하는 증상을 선택하여 주십시오");
+
+	make_frame(0, 0, 118, 29);	// 테두리 인터페이스
+	gotoxy(33, 28);
+	printf("* Emergency Patient Information Exchange Program *");
+
+	make_frame(30, 9, 55, 14);		// 중형 사이즈 인터페이스 2
+	gotoxy(43, 9);
+	printf("  An Emergency Patient Report   ");
+
+	gotoxy(52, 2);	// 현 카테고리 표시 인터페이스 + 노랑 글씨
+	color(14);
+	printf("응급환자 신고");
+	color(15);	// 컬러 전환
+
+	gotoxy(35, 11);
+	printf("* 아래 중 해당하는 증상을 선택하여 주십시오 *");
 	for (int i = 0; i < cnt; ++i)
 	{
-		gotoxy(4, 3 + i);
+		gotoxy(35, 13 + i);
 		printf("%s", data[i]);
 	}
 	int cur = 0;//41 75 14~+2
 	char in;
 	while (1)
 	{
-		for (int i = 3; i < cnt+3; i++)
+		for (int i = 13; i < cnt + 13; i++)					// 버튼 고쳐야할 부분!
 		{
-			if (i == cur + 3)
+			if (i == cur + 13)
 			{
-				gotoxy(2, i);
+				gotoxy(33, i);
 				printf("●");
 			}
 			else
 			{
-				gotoxy(2, i);
+				gotoxy(33, i);
 				printf("○");
 			}
 			gotoxy(0, 0);
@@ -114,7 +127,7 @@ char func_KTAS1(char* root)
 				if (cur > 0) cur--;
 				break;
 			case DOWN:
-				if (cur < cnt-1) cur++;
+				if (cur < cnt - 1) cur++;
 				break;
 			}
 		}
@@ -147,28 +160,41 @@ char* func_KTAS2(char* root)
 	}
 	fclose(fp);
 	system("cls");
-	make_frame(0, 0, 118, 29);
-	gotoxy(2, 1);
-	printf("아래 중 해당하는 증상을 선택하여 주십시오");
+
+	make_frame(0, 0, 118, 29);	// 테두리 인터페이스
+	gotoxy(33, 28);
+	printf("* Emergency Patient Information Exchange Program *");
+
+	make_frame(30, 5, 55, 20);		// 중형 사이즈 인터페이스 3
+	gotoxy(43, 5);
+	printf("  An Emergency Patient Report   ");
+
+	gotoxy(52, 2);	// 현 카테고리 표시 인터페이스 + 노랑 글씨
+	color(14);
+	printf("응급환자 신고");
+	color(15);	// 컬러 전환
+
+	gotoxy(35, 7);
+	printf("* 아래 중 해당하는 증상을 선택하여 주십시오 *");		// 버튼 고쳐야 할 부분!
 	for (int i = 0; i < cnt; ++i)
 	{
-		gotoxy(4, 3 + i);
+		gotoxy(35, 9 + i);
 		printf("%s", data[i]);
 	}
 	int cur = 0;//41 75 14~+2
 	char in;
 	while (1)
 	{
-		for (int i = 3; i < cnt + 3; i++)
+		for (int i = 9; i < cnt + 9; i++)
 		{
-			if (i == cur + 3)
+			if (i == cur + 9)
 			{
-				gotoxy(2, i);
+				gotoxy(33, i);
 				printf("●");
 			}
 			else
 			{
-				gotoxy(2, i);
+				gotoxy(33, i);
 				printf("○");
 			}
 			gotoxy(0, 0);
